@@ -9,7 +9,8 @@
 #include <vector>
 #include <string>
 
-class Table {
+class Table
+{
 
     public:
         Table(unsigned int max_entries = 100);

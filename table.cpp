@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include "table.h"
 #include "entry.h"
 
@@ -14,18 +15,25 @@ Table::Table(unsigned int max_entries)
 Table::Table(unsigned int entries, std::istream& input)
 {
     arr = new std::vector<Entry>[entries];
-    unsigned int in = 0;
+    len = entries;
+    Entry e;
 
     for(int i = 0; i<entries; i++)
     {
-        //input >> in;
-        
+        input >> e;
+        put(e);
     }
 }
 
 void Table::put(unsigned int key, std::string data)
 {
     Entry e(key, data);
+    
+    for( int i=0; i<arr[ key % len ].size(); i++ )
+    {
+        if( arr[ key % len ].at(i).get_key() == key )
+            return;
+    }
     arr[ key % len ].push_back( e );
 }
 
@@ -63,32 +71,14 @@ bool Table::remove(unsigned int key)
 
 std::ostream& operator<< (std::ostream& out, const Table& t)
 {
-    //int print_count = 0;
-    //int last_key = 0;
-    //while(print_count < t.len )
-    //{
-        for(int i = 0; i<t.len; i++)
+    std::vector<Entry> tmp;
+    for( int i=0; i<len; i++)
+    {
+        for( int j=0; j<arr[i].size(); j++)
         {
-           // if(print_count==0)
-           // {
-           //     i=1;
-           // }
-
-            for(int j = 0; j<t.arr[i].size(); j++)
-            {
-                //if ( t.arr[i].at(j).get_key() > last_key )
-                //{
-                //    last_key = t.arr[i].at(j).get_key();
-                //    print_count++;
-                    out << t.arr[i].at(j);
-                //    break;
-                //}
-
-                cout << j;
-            }
-            cout << i ;
-
+            tmp.push_back( arr[i].at(j);
         }
-    //}
-    return out;
+    }
+
+    //Next, Mergesort the values
 }

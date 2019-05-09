@@ -62,7 +62,7 @@ std::string Table::get(unsigned int key) const
     //{
         for( int i=0; i<arr[ key % len ].size(); i++)
         {
-            if( arr[ key % len ][i].get_key() == key )
+            if( arr[ key % len ].at(i).get_key() == key )
                 return arr[ key % len].at(i).get_data();
         }
     //}
@@ -79,9 +79,11 @@ bool Table::remove(unsigned int key)
     {
         for( int i=0; i<arr[ key % len ].size(); i++)
         {
-            if( arr[ key % len][i].get_key() == key )
-                arr[ key % len].erase( arr[ key % len].begin()+i );
+            if( arr[ key % len ].at(i).get_key() == key )
+            {
+                arr[ key % len ].erase( arr[ key % len].begin()+i );
                 return true;
+            }
         }
     }
     return false;

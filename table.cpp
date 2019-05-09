@@ -39,40 +39,33 @@ void Table::put(unsigned int key, std::string data)
     for( int i=0; i<arr[ key % len ].size(); i++ )
     {
         if( arr[ key % len ].at(i).get_key() == key )
+        {
+            arr[ key % len ].at(i).set_data( e.get_data() );
             return;
+        }
     }
     arr[ key % len ].push_back( e );
 }
 
 void Table::put(Entry e)
 {
-    //adds a copy? of entry e onto the table
-
-    unsigned int e_key = e.get_key();
-
-    //Entry e2( e.get_key(), e.get_data() );
-
-    for( int i=0; i<arr[ e_key % len ].size(); i++ )
-    {
-        if( arr[ e_key % len ].at(i).get_key() == e_key )
-            return;
-    }
-
-    arr[ e_key % len ].push_back( e );
+    //adds a copy of entry e onto the table
+    
+    put(e.get_key(), e.get_data());
 }
 
 std::string Table::get(unsigned int key) const
 {
     //returns key with fast average-case run-time, if it exists
 
-    if( arr[ key % len ].size() > 0 )
-    {
+    //if( arr[ key % len ].size() > 0 )
+    //{
         for( int i=0; i<arr[ key % len ].size(); i++)
         {
-            if( arr[ key % len].at(i).get_key() == key )
+            if( arr[ key % len ][i].get_key() == key )
                 return arr[ key % len].at(i).get_data();
         }
-    }
+    //}
     return "";
 }
 
@@ -86,13 +79,14 @@ bool Table::remove(unsigned int key)
     {
         for( int i=0; i<arr[ key % len ].size(); i++)
         {
-            if( arr[ key % len].at(i).get_key() == key )
+            if( arr[ key % len][i].get_key() == key )
                 arr[ key % len].erase( arr[ key % len].begin()+i );
                 return true;
         }
     }
     return false;
 }
+
 
 
 void merge_sort(Entry *e, size_t size)
@@ -153,6 +147,7 @@ void merge(Entry *e, size_t left_size, size_t right_size)
 
     delete [] tmp;
 }
+
 
 
 std::ostream& operator<< (std::ostream& out, const Table& t)

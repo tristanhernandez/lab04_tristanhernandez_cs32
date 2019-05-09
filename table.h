@@ -26,7 +26,7 @@ class Table
 
 };
 
-void merge_sort(std::vector<Entry>& v1);
-void merge_sort_helper(std::vector<Entry>& v2, int merge_start, int merge_end, std::vector<Entry>& v1);
+void merge_sort(Entry *e, size_t size);
+void merge(Entry *e, size_t left_size, size_t right_size);
 
 #endif /* table_h */

@@ -27,6 +27,7 @@ Table::Table(unsigned int entries, std::istream& input)
         input >> e;
         put(e);
     }
+
 }
 
 void Table::put(unsigned int key, std::string data)
@@ -48,6 +49,8 @@ void Table::put(Entry e)
     //adds a copy? of entry e onto the table
 
     unsigned int e_key = e.get_key();
+
+    //Entry e2( e.get_key(), e.get_data() );
 
     for( int i=0; i<arr[ e_key % len ].size(); i++ )
     {
@@ -76,6 +79,8 @@ std::string Table::get(unsigned int key) const
 bool Table::remove(unsigned int key)
 {
     //removes key with fast average-case run-time, if it exists
+    if( len == 0 )
+        return false;
 
     if( arr[ key % len ].size() > 0 )
     {
@@ -89,49 +94,66 @@ bool Table::remove(unsigned int key)
     return false;
 }
 
-void merge_sort(std::vector<Entry>& v1)
+
+void merge_sort(Entry *e, size_t size)
 {
-    std::vector<Entry> v2 = v1;
-    merge_sort_helper(v2, 0, v2.size(), v1);
+    size_t left_size;
+    size_t right_size;
+
+    if (size > 1){
+        left_size = size/2;
+        right_size = size - left_size;
+
+        merge_sort(e, left_size);
+
+        merge_sort( (e+left_size), right_size);
+        
+        merge(e, left_size, right_size);
+    }
 }
 
-void merge_sort_helper(std::vector<Entry>& v2, int merge_start, int merge_end, std::vector<Entry>& v1)
+void merge(Entry *e, size_t left_size, size_t right_size)
 {
     //HELPER FOR MERGE_SORT()
-    //if the size of the sub-aray is one element long or shorter, return;
 
-    if( merge_end - merge_start < 2 )
+    Entry *tmp;
+    size_t copied = 0;          //total elements copied to tmp
+    size_t left_copied = 0;     //copied elements from left side of array
+    size_t right_copied = 0;    //copied elements from right...
+
+    tmp = new Entry[left_size + right_size];
+
+    while( (left_copied<left_size) &&
+           (right_copied<right_size) )
     {
-        return;
-    }
-
-    //calculates the mid-point of this section
-
-    int merge_mid = (merge_start + merge_end)/2;
-
-    merge_sort_helper(v1, merge_start, merge_mid, v2);
-    merge_sort_helper(v1, merge_mid,   merge_end, v2);
-
-    //merges everything back together
-
-    int i = merge_start;
-    int j = merge_mid;
-
-    for(int k = merge_start; k < merge_end; k++)
-    {
-        if ( i<merge_mid && ( j>=merge_end || v1.at(i) <= v1.at(j) ) )
+        if( e[left_copied].get_key() < ( (e+left_size)[right_copied].get_key() ) )
         {
-            v2.at(k) = v1.at(i);
-            i++;        
+            tmp[copied++] = e[left_copied++];
         }
         else
         {
-            v2.at(k) = v1.at(i);
-            j++;
+            tmp[copied++] = (e+left_size)[right_copied++];
         }
     }
 
+    while(left_copied < left_size)
+    {
+        tmp[copied++] = e[left_copied++];
+    }
+
+    while(right_copied < right_size)
+    {
+        tmp[copied++] = (e+left_size)[right_copied++];
+    }
+    
+    for (int i = 0; i<left_size+right_size; i++)
+    {
+        e[i] = tmp[i];
+    }
+
+    delete [] tmp;
 }
+
 
 std::ostream& operator<< (std::ostream& out, const Table& t)
 {
@@ -146,16 +168,30 @@ std::ostream& operator<< (std::ostream& out, const Table& t)
         }
     }
 
+    int tmp_size = tmp.size();
+    
+    if(tmp_size == 0)
+        return out;
+
+    Entry *tmp_arr = new Entry[ tmp_size ];
+
+    for( int i=0; i<t.len; i++)
+    {
+        tmp_arr[i] = tmp.at(i);
+    }
+
     //Next, Mergesort the values
 
-    merge_sort(tmp);
+    merge_sort(tmp_arr, tmp_size);
 
     //Then, print everything in the sorted array
 
-    for( int i=0; i<tmp.size(); i++)
+    for( int i=0; i<tmp_size; i++)
     {
-        out << tmp.at(i) << endl;
+        out << tmp_arr[i] << endl;
     }
+
+    delete [] tmp_arr;
 
     return out;
 }
